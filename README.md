@@ -1,24 +1,11 @@
-# workout-app
+# Workout app
 
-## Project setup
-```
-npm install
-```
+Workout tracking single page application.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+##Stack
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+- Framework: Vue.js with Vuetify, Vuex, adn Vue CLI
+- Libraries: Chart.js
+- Database: Firestore
+- Hosting and authentication with Firebase
+- Form validation with Vuelidate
