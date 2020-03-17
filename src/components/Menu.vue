@@ -2,36 +2,28 @@
   <header>
     <v-navigation-drawer v-model="sideNav" absolute temporary>
       <v-list>
-        <v-list-item v-if="user">
-          <v-list-item-icon>
-            <v-icon>mdi-home</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
+        <v-list-item-group color="primary">
+          <v-list-item
+            v-for="item in drawerItems"
+            :key="item.name"
+            :to="{ path: item.path }"
+          >
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
             <v-list-item-title>
-              Display statistics
+              {{ item.name }}
             </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item v-if="user">
-          <v-list-item-icon>
-            <v-icon>mdi-plus</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
+          </v-list-item>
+          <v-list-item v-if="user" @click="logout">
+            <v-list-item-icon>
+              <v-icon>mdi-logout</v-icon>
+            </v-list-item-icon>
             <v-list-item-title>
-              Start workout
+              Log out
             </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item v-if="user">
-          <v-list-item-icon>
-            <v-icon>mdi-format-list-bulleted-square</v-icon>
-          </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>
-                Display log
-              </v-list-item-title>
-            </v-list-item-content>
-        </v-list-item>
+          </v-list-item>
+        </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar dark>
@@ -95,12 +87,51 @@
 <script>
 export default {
   name: 'Menu',
+
   data () {
     return {
       sideNav: null,
       user: null
     }
   },
+
+  computed: {
+    drawerItems () {
+      if (this.user) {
+        return [
+          {
+            name: 'Display statistics',
+            icon: 'mdi-home',
+            path: '/home'
+          },
+          {
+            name: 'Start workout',
+            icon: 'mdi-plus',
+            path: '/new'
+          },
+          {
+            name: 'Display log',
+            icon: 'mdi-format-list-bulleted-square',
+            path: '/log'
+          }
+        ]
+      } else {
+        return [
+          {
+            name: 'Register',
+            icon: 'mdi-account-plus',
+            path: '/register'
+          },
+          {
+            name: 'Log in',
+            icon: 'mdi-login',
+            path: '/login'
+          }
+        ]
+      }
+    }
+  },
+
   methods: {
     register () {
       this.user = 'Tester'

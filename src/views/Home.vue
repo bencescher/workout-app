@@ -1,7 +1,9 @@
 <template>
   <main>
-    <h1>Summary of previous workouts</h1>
-    <p>Charts, widgets, etc...</p>
+    <v-container fluid>
+      <v-row>
+      </v-row>
+    </v-container>
   </main>
 </template>
 

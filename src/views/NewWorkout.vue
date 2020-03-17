@@ -18,7 +18,7 @@
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn v-on="on" @click.stop="fillSelect('weight')" class="mx-2 my-8" fab dark color="cyan">
+              <v-btn v-on="on" @click.stop="fillSelect('weight')" class="mx-2 my-8" fab dark color="teal">
                 <v-icon>mdi-weight-lifter</v-icon>
               </v-btn>
             </template>
@@ -26,7 +26,7 @@
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn v-on="on" @click.stop="fillSelect('cardio')" class="mx-2 my-8" fab dark color="cyan">
+              <v-btn v-on="on" @click.stop="fillSelect('cardio')" class="mx-2 my-8" fab dark color="light-green">
                 <v-icon>mdi-run</v-icon>
               </v-btn>
             </template>
@@ -48,6 +48,7 @@
           v-if="select && (workoutType === 'own-weight' || workoutType === 'weight')"
           v-model="setNumber"
           :error-messages="setNumberErrors"
+          clearable
           label="Number of sets"
           outlined
           required
@@ -59,6 +60,7 @@
             v-for="repetitionId in parseInt(setNumber)"
             v-model="repetitions[repetitionId-1]"
             :key="repetitionId"
+            clearable
             label="Repetition"
             outlined
             required
@@ -69,14 +71,40 @@
             v-for="weightId in parseInt(setNumber)"
             v-model="weights[weightId-1]"
             :key="weightId"
+            suffix="kg"
+            clearable
             label="Weight"
             outlined
             required
           ></v-text-field>
         </div>
-        <div class="text-center">
-          <v-btn dark class="mr-4 my-4 green" @click="submit">submit</v-btn>
-          <v-btn class="my-4" @click="clear">clear</v-btn>
+        <v-text-field
+          v-if="select && (workoutType === 'cardio')"
+          v-model="duration"
+          v-mask="durationMask"
+          :error-messages="durationErrors"
+          clearable
+          label="Duration of workout"
+          outlined
+          required
+          @input="$v.duration.$touch()"
+          @blur="$v.duration.$touch()"
+        ></v-text-field>
+        <v-text-field
+          v-if="select && (workoutType === 'cardio')"
+          v-model="distance"
+          :error-messages="distanceErrors"
+          suffix="km"
+          clearable
+          label="Distance"
+          outlined
+          required
+          @input="$v.distance.$touch()"
+          @blur="$v.distance.$touch()"
+        ></v-text-field>
+        <div v-if="select" class="text-center">
+          <v-btn dark class="mr-4 my-4 green" @click="submit">Save</v-btn>
+          <v-btn class="my-4" @click="clear">Clear</v-btn>
         </div>
       </form>
     </v-card>
@@ -86,6 +114,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, between } from 'vuelidate/lib/validators'
+import { mask } from 'vue-the-mask'
 
 export default {
   mixins: [validationMixin],
@@ -95,7 +124,13 @@ export default {
     setNumber: {
       required,
       between: between(1, 10)
-    }
+    },
+    duration: { required },
+    distance: { required }
+  },
+
+  directives: {
+    mask
   },
 
   data: () => ({
@@ -104,7 +139,10 @@ export default {
     items: [],
     setNumber: '',
     repetitions: [],
-    weights: []
+    weights: [],
+    duration: '',
+    distance: '',
+    durationMask: '##:##'
   }),
 
   watch: {
@@ -139,6 +177,18 @@ export default {
       if (!this.$v.setNumber.$dirty) return errors
       !this.$v.setNumber.required && errors.push('Set number is required.')
       !this.$v.setNumber.between && errors.push('Set number must be between 1 and 10.')
+      return errors
+    },
+    durationErrors () {
+      const errors = []
+      if (!this.$v.duration.$dirty) return errors
+      !this.$v.duration.required && errors.push('Duration is required')
+      return errors
+    },
+    distanceErrors () {
+      const errors = []
+      if (!this.$v.distance.$dirty) return errors
+      !this.$v.distance.required && errors.push('Duration is required')
       return errors
     }
   },
