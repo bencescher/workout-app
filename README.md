@@ -2,7 +2,7 @@
 
 Workout tracking single page application.
 
-##Stack
+## Stack
 
 - Framework: Vue.js with Vuetify, Vuex, adn Vue CLI
 - Libraries: Chart.js
