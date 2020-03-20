@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="app">
     <app-menu></app-menu>
     <router-view/>
   </v-app>
@@ -21,3 +21,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.v-application--wrap {
+  background-color: #000;
+}
+</style>

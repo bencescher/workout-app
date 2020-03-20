@@ -1,6 +1,7 @@
 <template>
   <main>
     <v-card
+      dark
       max-width="600"
       elevation="12"
       class="mx-auto mt-12 px-8 py-4"

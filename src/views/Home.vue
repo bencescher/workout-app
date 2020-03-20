@@ -6,7 +6,7 @@
           <v-card
             dark
             class="pa-2 text-center"
-            color="blue-grey darken-2"
+            color="blue-grey darken-3"
           >
             <v-card-text>
               <div class="display-1 font-weight-light">Settings</div>
@@ -39,13 +39,13 @@
         </v-col>
       </v-row>
       <v-row class="mb-2">
-        <v-col>
+        <v-col md="6" xs="12">
           <v-hover>
             <template v-slot="{ hover }">
               <v-card
                 :elevation="hover ? 12 : 6"
                 dark
-                color="blue darken-2"
+                color="blue darken-3"
                 class="mx-auto pa-2 text-center"
               >
                 <v-card-text>
@@ -61,6 +61,7 @@
                       padding="24"
                       stroke-linecap="round"
                       smooth
+                      auto-draw
                     >
                       <template v-slot:label="periodsFiltered">
                         {{ periodsFiltered.value }}
@@ -72,14 +73,14 @@
             </template>
           </v-hover>
         </v-col>
-        <v-col>
+        <v-col cols="12" md="6">
           <v-hover>
             <template v-slot="{ hover }">
               <v-card
                 :elevation="hover ? 12 : 6"
                 dark
                 class="mx-auto pa-2"
-                color="light-blue darken-2 text-center"
+                color="light-blue darken-3 text-center"
               >
                 <v-card-text>
                   <div class="display-1 font-weight-light">Own weight</div>
@@ -109,13 +110,13 @@
         </v-col>
       </v-row>
       <v-row class="mb-2">
-        <v-col>
+        <v-col cols="12" md="6">
           <v-hover>
             <template v-slot="{ hover }">
               <v-card
                 :elevation="hover ? 12 : 6"
                 dark
-                color="cyan darken-2"
+                color="cyan darken-3"
                 class="mx-auto pa-2 text-center"
               >
                 <v-card-text>
@@ -142,13 +143,13 @@
             </template>
           </v-hover>
         </v-col>
-        <v-col>
+        <v-col cols="12" md="6">
           <v-hover>
             <template v-slot="{ hover }">
               <v-card
                 :elevation="hover ? 12 : 6"
                 dark
-                color="teal darken-2"
+                color="teal darken-3"
                 class="mx-auto pa-2"
               >
                 <v-card-text>
@@ -177,13 +178,13 @@
         </v-col>
       </v-row>
       <v-row class="mb-2">
-        <v-col>
+        <v-col cols="12" md="6">
           <v-hover>
             <template v-slot="{ hover }">
               <v-card
                 :elevation="hover ? 12 : 6"
                 dark
-                color="green darken-2"
+                color="green darken-3"
                 class="mx-auto pa-2"
               >
                 <v-card-text>
@@ -197,6 +198,8 @@
                       color="rgba(255, 255, 255, .7)"
                       height="100"
                       padding="24"
+                      type="bar"
+                      auto-draw
                       stroke-linecap="round"
                       smooth
                     >
@@ -210,13 +213,13 @@
             </template>
           </v-hover>
         </v-col>
-        <v-col>
+        <v-col cols="12" md="6">
           <v-hover>
             <template v-slot="{ hover }">
               <v-card
                 :elevation="hover ? 12 : 6"
                 dark
-                color="light-green"
+                color="light-green darken-3"
                 class="mx-auto pa-2"
               >
                 <v-card-text>
@@ -227,6 +230,7 @@
                     <v-sparkline
                       :value="valuesFiltered"
                       :labels="periodsFiltered"
+                      auto-draw
                       color="rgba(255, 255, 255, .7)"
                       height="100"
                       padding="24"

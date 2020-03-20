@@ -1,8 +1,8 @@
 <template>
   <header>
-    <v-navigation-drawer v-model="sideNav" absolute temporary>
+    <v-navigation-drawer v-model="sideNav" absolute temporary dark>
       <v-list>
-        <v-list-item-group color="primary">
+        <v-list-item-group>
           <v-list-item
             v-for="item in drawerItems"
             :key="item.name"
