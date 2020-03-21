@@ -39,8 +39,7 @@ export default new Vuex.Store({
         {
           type: 'weight',
           exercise: 'One arm wrist curls',
-          repetitions: [10, 12, 14, 14],
-          weights: [8, 10, 12, 12],
+          repetitions: [[10, 8], [12, 10], [14, 12], [14, 12]],
           timestamp: 1584643921
         }
       ]

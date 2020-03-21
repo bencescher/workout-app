@@ -6,7 +6,6 @@
           <v-card
             dark
             class="pa-2 text-center"
-            color="blue-grey darken-3"
           >
             <v-card-text>
               <div class="display-1 font-weight-light">Settings</div>
@@ -44,24 +43,24 @@
             <template v-slot="{ hover }">
               <v-card
                 :elevation="hover ? 12 : 6"
-                dark
-                color="blue darken-3"
                 class="mx-auto pa-2 text-center"
+                dark
               >
                 <v-card-text>
                   <div class="display-1 font-weight-light">Total workout activity</div>
                 </v-card-text>
                 <v-card-text>
-                  <v-sheet color="rgba(0, 0, 0, .12)">
+                  <v-sheet>
                     <v-sparkline
                       :value="valuesFiltered"
                       :labels="periodsFiltered"
-                      color="rgba(255, 255, 255, .7)"
+                      color="#FFC107"
                       height="100"
                       padding="24"
                       stroke-linecap="round"
                       smooth
                       auto-draw
+                      auto-draw-duration="1000"
                     >
                       <template v-slot:label="periodsFiltered">
                         {{ periodsFiltered.value }}
@@ -78,25 +77,24 @@
             <template v-slot="{ hover }">
               <v-card
                 :elevation="hover ? 12 : 6"
-                dark
-                class="mx-auto pa-2"
-                color="light-blue darken-3 text-center"
+                class="mx-auto pa-2 text-center"
               >
                 <v-card-text>
-                  <div class="display-1 font-weight-light">Own weight</div>
+                  <div class="display-1 font-weight-light">Own weight workouts</div>
                 </v-card-text>
                 <v-card-text>
-                  <v-sheet color="rgba(0, 0, 0, .12)">
+                  <v-sheet color="tertiary lighten-1">
                     <v-sparkline
                       :value="valuesFiltered"
                       :labels="periodsFiltered"
                       type="bar"
-                      color="rgba(255, 255, 255, .7)"
+                      color="#FFC107"
                       height="100"
                       padding="24"
                       stroke-linecap="round"
                       smooth
                       auto-draw
+                      auto-draw-duration="1000"
                     >
                       <template v-slot:label="periodsFiltered">
                         {{ periodsFiltered.value }}
@@ -115,19 +113,19 @@
             <template v-slot="{ hover }">
               <v-card
                 :elevation="hover ? 12 : 6"
-                dark
-                color="cyan darken-3"
                 class="mx-auto pa-2 text-center"
               >
                 <v-card-text>
-                  <div class="display-1 font-weight-light">Weekly / monthly weight workout</div>
+                  <div class="display-1 font-weight-light">Weight workouts</div>
                 </v-card-text>
                 <v-card-text>
-                  <v-sheet color="rgba(0, 0, 0, .12)">
+                  <v-sheet color="tertiary lighten-1">
                     <v-sparkline
                       :value="valuesFiltered"
                       :labels="periodsFiltered"
-                      color="rgba(255, 255, 255, .7)"
+                      auto-draw
+                      auto-draw-duration="1000"
+                      color="#FFC107"
                       height="100"
                       padding="24"
                       stroke-linecap="round"
@@ -149,18 +147,19 @@
               <v-card
                 :elevation="hover ? 12 : 6"
                 dark
-                color="teal darken-3"
-                class="mx-auto pa-2"
+                class="mx-auto pa-2 text-center"
               >
                 <v-card-text>
-                  <div class="display-1 font-weight-light">Weekly / monthly cardio workout</div>
+                  <div class="display-1 font-weight-light">Cardio workouts</div>
                 </v-card-text>
                 <v-card-text>
                   <v-sheet color="rgba(0, 0, 0, .12)">
                     <v-sparkline
                       :value="valuesFiltered"
                       :labels="periodsFiltered"
-                      color="rgba(255, 255, 255, .7)"
+                      auto-draw
+                      auto-draw-duration="1000"
+                      color="#FFC107"
                       height="100"
                       padding="24"
                       stroke-linecap="round"
@@ -184,8 +183,7 @@
               <v-card
                 :elevation="hover ? 12 : 6"
                 dark
-                color="green darken-3"
-                class="mx-auto pa-2"
+                class="mx-auto pa-2 text-center"
               >
                 <v-card-text>
                   <div class="display-1 font-weight-light">Workout by type</div>
@@ -195,11 +193,12 @@
                     <v-sparkline
                       :value="valuesFiltered"
                       :labels="periodsFiltered"
-                      color="rgba(255, 255, 255, .7)"
+                      color="#FFC107"
                       height="100"
                       padding="24"
                       type="bar"
                       auto-draw
+                      auto-draw-duration="1000"
                       stroke-linecap="round"
                       smooth
                     >
@@ -219,8 +218,7 @@
               <v-card
                 :elevation="hover ? 12 : 6"
                 dark
-                color="light-green darken-3"
-                class="mx-auto pa-2"
+                class="mx-auto pa-2 text-center"
               >
                 <v-card-text>
                   <div class="display-1 font-weight-light">Workout by anything</div>
@@ -231,7 +229,8 @@
                       :value="valuesFiltered"
                       :labels="periodsFiltered"
                       auto-draw
-                      color="rgba(255, 255, 255, .7)"
+                      auto-draw-duration="1000"
+                      color="#FFC107"
                       height="100"
                       padding="24"
                       stroke-linecap="round"

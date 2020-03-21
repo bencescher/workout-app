@@ -2,8 +2,7 @@
   <main>
     <v-sheet
       class="mx-auto pt-4"
-      dark
-      max-width="800"
+      max-width="900"
     >
       <v-expansion-panels focusable>
         <v-expansion-panel
@@ -13,20 +12,148 @@
           <v-expansion-panel-header class="pa-6">
             <v-row no-gutters>
               <v-col cols="1" class="text-center">
-                <v-icon>mdi-run</v-icon>
+                <v-icon
+                  v-if="workout.type === 'cardio'"
+                  color="primary"
+                >mdi-run</v-icon>
+                <v-icon
+                  v-if="workout.type === 'own-weight'"
+                  color="primary"
+                >mdi-arm-flex</v-icon>
+                <v-icon
+                  v-if="workout.type === 'weight'"
+                  color="primary"
+                >mdi-weight-lifter</v-icon>
               </v-col>
               <v-col cols="8">
                 {{ workout.exercise }}
               </v-col>
             </v-row>
           </v-expansion-panel-header>
-          <v-expansion-panel-content class="text-center">
-            <v-row>
-              <v-col v-if="workout.type === 'cardio'" cols="4">Duration: {{ workout.duration }}</v-col>
-              <v-col v-if="workout.type === 'cardio'" cols="4">Distance: {{ workout.distance }} km</v-col>
-              <v-col v-if="workout.type === 'own-weight' || workout.type === 'weight'" cols="4">Sets: {{ workout.repetitions.length }}</v-col>
-              <v-col v-if="workout.type === 'own-weight' || workout.type === 'weight'" cols="4">Repetitions: {{ workout.repetitions }}</v-col>
-              <v-col v-if="workout.type === 'weight'" cols="4">Weights: {{ workout.weights }}</v-col>
+          <v-expansion-panel-content>
+            <v-row class="text-center">
+              <v-col
+                v-if="workout.type === 'cardio'"
+                cols="12"
+                sm="4"
+              >
+                <v-card outlined>
+                  <v-card-title>
+                    Duration
+                  </v-card-title>
+                  <v-card-subtitle>
+                    <v-chip
+                      color="primary"
+                      text-color="grey darken-3"
+                      large
+                      class="ma-2"
+                    >
+                      {{ workout.duration }}
+                    </v-chip>
+                  </v-card-subtitle>
+                </v-card>
+              </v-col>
+              <v-col
+                v-if="workout.type === 'cardio'"
+                cols="12"
+                sm="4"
+              >
+                <v-card outlined>
+                  <v-card-title>
+                    Distance
+                  </v-card-title>
+                  <v-card-subtitle>
+                    <v-chip
+                      color="primary"
+                      text-color="grey darken-3"
+                      large
+                      class="ma-2"
+                    >
+                      {{ workout.distance }} km
+                    </v-chip>
+                  </v-card-subtitle>
+                </v-card>
+              </v-col>
+              <v-col
+                v-if="workout.type === 'cardio'"
+                cols="12"
+                sm="4"
+              >
+                <v-card outlined>
+                  <v-card-title>
+                    Average speed
+                  </v-card-title>
+                  <v-card-subtitle>
+                    <v-chip
+                      color="primary"
+                      text-color="grey darken-3"
+                      large
+                      class="ma-2"
+                    >
+                      {{
+                        (workout.distance
+                        / ((parseInt(workout.duration.substring(0,2))
+                        + (workout.duration.substring(3,5) / 60))
+                        / 60)
+                        ).toFixed(2)
+                      }} km/h
+                    </v-chip>
+                  </v-card-subtitle>
+                </v-card>
+              </v-col>
+              <v-col
+                v-if="workout.type === 'own-weight'
+                || workout.type === 'weight'"
+                cols="12"
+                sm="3"
+              >
+                <v-card outlined>
+                  <v-card-title>
+                    Sets
+                  </v-card-title>
+                  <v-card-text>
+                    <v-chip
+                      large
+                      class="ma-2 px-6"
+                      color="primary"
+                      text-color="grey darken-3"
+                    >{{ workout.repetitions.length }}</v-chip>
+                  </v-card-text>
+                </v-card>
+                </v-col>
+              <v-col
+                v-if="workout.type === 'own-weight'
+                || workout.type === 'weight'"
+                cols="12"
+                sm="9"
+              >
+                <v-card outlined>
+                  <v-card-title>
+                    Repetitions
+                  </v-card-title>
+                  <v-card-text>
+                    <v-chip
+                      v-for="(repetition, i) in workout.repetitions"
+                      :key="i"
+                      large
+                      class="ma-2 px-6"
+                      color="primary"
+                      text-color="grey darken-3"
+                    >
+                      <span
+                        v-if="workout.type === 'own-weight'"
+                      >
+                        {{ repetition }}
+                      </span>
+                      <span
+                        v-if="workout.type === 'weight'"
+                      >
+                        {{ repetition[0] }} x {{ repetition[1] }} kg
+                      </span>
+                    </v-chip>
+                  </v-card-text>
+                </v-card>
+              </v-col>
             </v-row>
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -37,48 +164,9 @@
 
 <script>
 export default {
-  data: () => {
-    return {
-      workouts: [
-        {
-          id: 1,
-          type: 'cardio',
-          exercise: 'Running',
-          duration: '32:49',
-          distance: '4.52',
-          timestamp: 1584646932
-        },
-        {
-          id: 2,
-          type: 'cardio',
-          exercise: 'Walking',
-          duration: '24:36',
-          distance: '2.83',
-          timestamp: 1584640903
-        },
-        {
-          id: 3,
-          type: 'own-weight',
-          exercise: 'Pushups',
-          repetitions: [12, 14, 16, 18],
-          timestamp: 1584646941
-        },
-        {
-          id: 4,
-          type: 'own-weight',
-          exercise: 'Crunches',
-          repetitions: [22, 22, 24, 24],
-          timestamp: 1584643921
-        },
-        {
-          id: 5,
-          type: 'weight',
-          exercise: 'One arm wrist curls',
-          repetitions: [10, 12, 14, 14],
-          weights: [8, 10, 12, 12],
-          timestamp: 1584643921
-        }
-      ]
+  computed: {
+    workouts () {
+      return this.$store.getters.workouts
     }
   }
 }

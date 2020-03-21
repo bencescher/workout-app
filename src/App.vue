@@ -10,14 +10,13 @@ import Menu from '@/components/Menu'
 
 export default {
   name: 'App',
+
   components: {
     'app-menu': Menu
   },
-  data () {
-    return {
-    }
-  },
-  methods: {
+
+  created () {
+    this.$store.dispatch('initWorkouts')
   }
 }
 </script>

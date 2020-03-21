@@ -1,7 +1,6 @@
 <template>
   <main>
     <v-card
-      dark
       max-width="600"
       elevation="12"
       class="mx-auto mt-12 px-8 py-4"
@@ -11,24 +10,24 @@
         <div class="text-center">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn v-on="on" @click.stop="fillSelect('own-weight')" class="mx-2 my-8" fab dark color="cyan">
-                <v-icon>mdi-arm-flex</v-icon>
+              <v-btn v-on="on" @click.stop="fillSelect('own-weight')" class="mx-2 my-8" fab color="primary">
+                <v-icon color="grey darken-3">mdi-arm-flex</v-icon>
               </v-btn>
             </template>
             <span>Own weight</span>
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn v-on="on" @click.stop="fillSelect('weight')" class="mx-2 my-8" fab dark color="teal">
-                <v-icon>mdi-weight-lifter</v-icon>
+              <v-btn v-on="on" @click.stop="fillSelect('weight')" class="mx-2 my-8" fab dark color="primary">
+                <v-icon color="grey darken-3">mdi-weight-lifter</v-icon>
               </v-btn>
             </template>
             <span>With weight</span>
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn v-on="on" @click.stop="fillSelect('cardio')" class="mx-2 my-8" fab dark color="light-green">
-                <v-icon>mdi-run</v-icon>
+              <v-btn v-on="on" @click.stop="fillSelect('cardio')" class="mx-2 my-8" fab dark color="primary">
+                <v-icon color="grey darken-3">mdi-run</v-icon>
               </v-btn>
             </template>
             <span>Cardio</span>
@@ -104,8 +103,8 @@
           @blur="$v.distance.$touch()"
         ></v-text-field>
         <div v-if="select" class="text-center">
-          <v-btn dark class="mr-4 my-4 green" @click="submit">Save</v-btn>
-          <v-btn class="my-4" @click="clear">Clear</v-btn>
+          <v-btn class="mr-4 my-4" text color="primary" @click="submit">Save</v-btn>
+          <v-btn class="my-4" text @click="clear">Clear</v-btn>
         </div>
       </form>
     </v-card>
@@ -143,7 +142,17 @@ export default {
     weights: [],
     duration: '',
     distance: '',
-    durationMask: '##:##'
+    durationMask: {
+      mask: '##:C#',
+      tokens: {
+        C: {
+          pattern: /[0-5]/
+        },
+        '#': {
+          pattern: /\d/
+        }
+      }
+    }
   }),
 
   watch: {
