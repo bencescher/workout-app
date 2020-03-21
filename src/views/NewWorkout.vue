@@ -61,7 +61,7 @@
             v-model="repetitions[repetitionId-1]"
             :key="repetitionId"
             clearable
-            label="Repetition"
+            label="Number of repetition"
             outlined
             required
           ></v-text-field>
@@ -84,9 +84,10 @@
           v-mask="durationMask"
           :error-messages="durationErrors"
           clearable
-          label="Duration of workout"
+          label="Duration ( in minutes and seconds )"
           outlined
           required
+          suffix="mm:ss"
           @input="$v.duration.$touch()"
           @blur="$v.duration.$touch()"
         ></v-text-field>
