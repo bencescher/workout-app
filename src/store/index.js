@@ -9,6 +9,41 @@ export default new Vuex.Store({
     workouts: []
   },
   mutations: {
+    'CREATE_WORKOUT' (state, workout) {
+      const newWorkout = {}
+      const weightRepetitions = []
+
+      newWorkout.workouttype = workout.workouttype
+      newWorkout.exercise = workout.exercise
+      newWorkout.timestamp = workout.timestamp
+
+      switch (workout.workouttype) {
+        case 'cardio':
+          newWorkout.duration = workout.duration
+          newWorkout.distance = workout.distance
+          break
+        case 'own-weight':
+          newWorkout.repetitions = workout.repetitions
+          break
+        case 'weight':
+          workout.repetitions.forEach(repetitionPair => {
+            repetitionPair.forEach(repetitionPaitItem => {
+              weightRepetitions.push(repetitionPaitItem)
+            })
+          })
+          newWorkout.repetitions = weightRepetitions
+          break
+        default:
+          break
+      }
+      db.collection('workouts').add({
+        newWorkout
+      })
+        .then(() => {
+          state.workouts.push(workout)
+        })
+    },
+
     'SET_WORKOUT' (state) {
       db.collection('workouts').get()
         .then(storedWorkouts => {
@@ -17,23 +52,19 @@ export default new Vuex.Store({
             const currentWorkout = {}
             let repetition = []
 
+            currentWorkout.workouttype = workout.workouttype
             currentWorkout.exercise = workout.exercise
             currentWorkout.timestamp = workout.timestamp
 
             switch (workout.workouttype) {
               case 'cardio':
-                currentWorkout.workouttype = 'cardio'
                 currentWorkout.duration = workout.duration
                 currentWorkout.distance = workout.distance
                 break
               case 'own-weight':
-                currentWorkout.workouttype = 'own-weight'
-                currentWorkout.setNumber = workout.repetitions.length
                 currentWorkout.repetitions = workout.repetitions
                 break
               case 'weight':
-                currentWorkout.workouttype = 'weight'
-                currentWorkout.setNumber = workout.repetitions.length
                 currentWorkout.repetitions = []
 
                 for (let i = 0; i < workout.repetitions.length; i++) {
@@ -54,6 +85,10 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    createWorkout: ({ commit }, workout) => {
+      commit('CREATE_WORKOUT', workout)
+    },
+
     initWorkouts: ({ commit }) => {
       commit('SET_WORKOUT')
     }

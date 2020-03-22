@@ -280,8 +280,42 @@ export default {
       }
     },
     submit () {
+      const newWorkout = {}
+      let repetitionPair = []
+
+      newWorkout.workouttype = this.workoutType
+      newWorkout.timestamp = new Date().getTime()
+      newWorkout.exercise = this.select
+
+      switch (this.workoutType) {
+        case 'cardio':
+          newWorkout.duration = this.duration
+          newWorkout.distance = this.distance
+          break
+        case 'own-weight':
+          newWorkout.repetitions = this.repetitions
+          break
+        case 'weight':
+          newWorkout.repetitions = []
+
+          for (let i = 0; i < this.setNumber; i++) {
+            repetitionPair.push(this.repetitions[i])
+            repetitionPair.push(this.weights[i])
+
+            if (repetitionPair.length === 2) {
+              newWorkout.repetitions.push(repetitionPair)
+              repetitionPair = []
+            }
+          }
+          break
+        default:
+          break
+      }
+
+      this.$store.dispatch('createWorkout', newWorkout)
       // show temporary success message after saving the new workout
       this.showSuccess = true
+      this.clear()
       setTimeout(function () {
         this.showSuccess = false
       }.bind(this), 3000)
