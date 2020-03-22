@@ -6,22 +6,22 @@
     >
       <v-expansion-panels focusable>
         <v-expansion-panel
-          v-for="workout in workouts"
-          :key="workout.id"
+          v-for="(workout, index) in workouts"
+          :key="index"
         >
           <v-expansion-panel-header class="pa-6">
             <v-row no-gutters>
               <v-col cols="1" class="text-center">
                 <v-icon
-                  v-if="workout.type === 'cardio'"
+                  v-if="workout.workouttype === 'cardio'"
                   color="primary"
                 >mdi-run</v-icon>
                 <v-icon
-                  v-if="workout.type === 'own-weight'"
+                  v-if="workout.workouttype === 'own-weight'"
                   color="primary"
                 >mdi-arm-flex</v-icon>
                 <v-icon
-                  v-if="workout.type === 'weight'"
+                  v-if="workout.workouttype === 'weight'"
                   color="primary"
                 >mdi-weight-lifter</v-icon>
               </v-col>
@@ -33,7 +33,7 @@
           <v-expansion-panel-content>
             <v-row class="text-center">
               <v-col
-                v-if="workout.type === 'cardio'"
+                v-if="workout.workouttype === 'cardio'"
                 cols="12"
                 sm="4"
               >
@@ -54,7 +54,7 @@
                 </v-card>
               </v-col>
               <v-col
-                v-if="workout.type === 'cardio'"
+                v-if="workout.workouttype === 'cardio'"
                 cols="12"
                 sm="4"
               >
@@ -75,7 +75,7 @@
                 </v-card>
               </v-col>
               <v-col
-                v-if="workout.type === 'cardio'"
+                v-if="workout.workouttype === 'cardio'"
                 cols="12"
                 sm="4"
               >
@@ -102,8 +102,8 @@
                 </v-card>
               </v-col>
               <v-col
-                v-if="workout.type === 'own-weight'
-                || workout.type === 'weight'"
+                v-if="workout.workouttype === 'own-weight'
+                || workout.workouttype === 'weight'"
                 cols="12"
                 sm="3"
               >
@@ -122,8 +122,8 @@
                 </v-card>
                 </v-col>
               <v-col
-                v-if="workout.type === 'own-weight'
-                || workout.type === 'weight'"
+                v-if="workout.workouttype === 'own-weight'
+                || workout.workouttype === 'weight'"
                 cols="12"
                 sm="9"
               >
@@ -141,12 +141,12 @@
                       text-color="grey darken-3"
                     >
                       <span
-                        v-if="workout.type === 'own-weight'"
+                        v-if="workout.workouttype === 'own-weight'"
                       >
                         {{ repetition }}
                       </span>
                       <span
-                        v-if="workout.type === 'weight'"
+                        v-if="workout.workouttype === 'weight'"
                       >
                         {{ repetition[0] }} x {{ repetition[1] }} kg
                       </span>

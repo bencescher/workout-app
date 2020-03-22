@@ -367,7 +367,6 @@ export default {
   methods: {
     periodChange () {
       console.log(this.filterPeriods())
-      console.log(this.filterValues())
     },
     filterPeriods (filterCounter) {
       if (this.initialPeriodFrequency.id === 'day' || this.initialPeriodFrequency === 'day') {

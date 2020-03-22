@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import db from '../firebase/init'
 
 Vue.use(Vuex)
 
@@ -9,44 +10,47 @@ export default new Vuex.Store({
   },
   mutations: {
     'SET_WORKOUT' (state) {
-      const mockWorkoutData = [
-        {
-          type: 'cardio',
-          exercise: 'Running',
-          duration: '32:49',
-          distance: '4.52',
-          timestamp: 1584646932
-        },
-        {
-          type: 'cardio',
-          exercise: 'Walking',
-          duration: '24:36',
-          distance: '2.83',
-          timestamp: 1584640903
-        },
-        {
-          type: 'own-weight',
-          exercise: 'Pushups',
-          repetitions: [12, 14, 16, 18],
-          timestamp: 1584646941
-        },
-        {
-          type: 'own-weight',
-          exercise: 'Crunches',
-          repetitions: [22, 22, 24, 24],
-          timestamp: 1584643921
-        },
-        {
-          type: 'weight',
-          exercise: 'One arm wrist curls',
-          repetitions: [[10, 8], [12, 10], [14, 12], [14, 12]],
-          timestamp: 1584643921
-        }
-      ]
+      db.collection('workouts').get()
+        .then(storedWorkouts => {
+          storedWorkouts.forEach(workoutDoc => {
+            const workout = workoutDoc.data()
+            const currentWorkout = {}
+            let repetition = []
 
-      mockWorkoutData.forEach(workout => {
-        state.workouts.push(workout)
-      })
+            currentWorkout.exercise = workout.exercise
+            currentWorkout.timestamp = workout.timestamp
+
+            switch (workout.workouttype) {
+              case 'cardio':
+                currentWorkout.workouttype = 'cardio'
+                currentWorkout.duration = workout.duration
+                currentWorkout.distance = workout.distance
+                break
+              case 'own-weight':
+                currentWorkout.workouttype = 'own-weight'
+                currentWorkout.setNumber = workout.repetitions.length
+                currentWorkout.repetitions = workout.repetitions
+                break
+              case 'weight':
+                currentWorkout.workouttype = 'weight'
+                currentWorkout.setNumber = workout.repetitions.length
+                currentWorkout.repetitions = []
+
+                for (let i = 0; i < workout.repetitions.length; i++) {
+                  repetition.push(workout.repetitions[i])
+
+                  if (repetition.length === 2) {
+                    currentWorkout.repetitions.push(repetition)
+                    repetition = []
+                  }
+                }
+                break
+              default:
+                break
+            }
+            state.workouts.push(currentWorkout)
+          })
+        })
     }
   },
   actions: {

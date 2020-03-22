@@ -1,5 +1,12 @@
 <template>
   <main>
+    <v-row v-show="showSuccess" no-gutters>
+      <v-col cols="12" md="6" class="mx-auto mt-1">
+        <v-alert type="success">
+          Nice job! Workout has been saved.
+        </v-alert>
+      </v-col>
+    </v-row>
     <v-card
       max-width="600"
       elevation="12"
@@ -10,7 +17,13 @@
         <div class="text-center">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn v-on="on" @click.stop="fillSelect('own-weight')" class="mx-2 my-8" fab color="primary">
+              <v-btn
+                v-on="on"
+                @click.stop="fillSelect('own-weight')"
+                class="mx-2 my-8"
+                fab
+                color="primary"
+              >
                 <v-icon color="grey darken-3">mdi-arm-flex</v-icon>
               </v-btn>
             </template>
@@ -18,7 +31,13 @@
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn v-on="on" @click.stop="fillSelect('weight')" class="mx-2 my-8" fab dark color="primary">
+              <v-btn
+                v-on="on"
+                @click.stop="fillSelect('weight')"
+                class="mx-2 my-8"
+                fab
+                color="primary"
+              >
                 <v-icon color="grey darken-3">mdi-weight-lifter</v-icon>
               </v-btn>
             </template>
@@ -26,7 +45,13 @@
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn v-on="on" @click.stop="fillSelect('cardio')" class="mx-2 my-8" fab dark color="primary">
+              <v-btn
+                v-on="on"
+                @click.stop="fillSelect('cardio')"
+                class="mx-2 my-8"
+                fab
+                color="primary"
+              >
                 <v-icon color="grey darken-3">mdi-run</v-icon>
               </v-btn>
             </template>
@@ -104,8 +129,17 @@
           @blur="$v.distance.$touch()"
         ></v-text-field>
         <div v-if="select" class="text-center">
-          <v-btn class="mr-4 my-4" text color="primary" @click="submit">Save</v-btn>
-          <v-btn class="my-4" text @click="clear">Clear</v-btn>
+          <v-btn
+            class="mr-4 my-4"
+            text
+            color="primary"
+            @click="submit"
+          >Save</v-btn>
+          <v-btn
+            class="my-4"
+            text
+            @click="clear"
+          >Clear</v-btn>
         </div>
       </form>
     </v-card>
@@ -113,21 +147,22 @@
 </template>
 
 <script>
+import { mask } from 'vue-the-mask'
 import { validationMixin } from 'vuelidate'
 import { required, between } from 'vuelidate/lib/validators'
-import { mask } from 'vue-the-mask'
 
 export default {
   mixins: [validationMixin],
 
   validations: {
+    // new workout form validations
+    distance: { required },
+    duration: { required },
     select: { required },
     setNumber: {
       required,
       between: between(1, 10)
-    },
-    duration: { required },
-    distance: { required }
+    }
   },
 
   directives: {
@@ -135,14 +170,8 @@ export default {
   },
 
   data: () => ({
-    workoutType: '',
-    select: null,
-    items: [],
-    setNumber: '',
-    repetitions: [],
-    weights: [],
-    duration: '',
     distance: '',
+    duration: '',
     durationMask: {
       mask: '##:C#',
       tokens: {
@@ -153,15 +182,24 @@ export default {
           pattern: /\d/
         }
       }
-    }
+    },
+    items: [],
+    repetitions: [],
+    select: null,
+    setNumber: '',
+    showSuccess: false,
+    weights: [],
+    workoutType: ''
   }),
 
   watch: {
     setNumber () {
+      // adjust repetition and weight array length to a lower set number
       if (this.setNumber) {
         if (this.setNumber < this.repetitions.length) {
           while (this.setNumber < this.repetitions.length) {
             this.repetitions.pop()
+
             if (this.workoutType === 'weight') {
               this.weights.pop()
             }
@@ -169,6 +207,7 @@ export default {
         }
       } else {
         this.repetitions = []
+
         if (this.workoutType === 'weight') {
           this.weights = []
         }
@@ -179,12 +218,14 @@ export default {
   computed: {
     selectErrors () {
       const errors = []
+
       if (!this.$v.select.$dirty) return errors
       !this.$v.select.required && errors.push('Item is required')
       return errors
     },
     setNumberErrors () {
       const errors = []
+
       if (!this.$v.setNumber.$dirty) return errors
       !this.$v.setNumber.required && errors.push('Set number is required.')
       !this.$v.setNumber.between && errors.push('Set number must be between 1 and 10.')
@@ -192,12 +233,14 @@ export default {
     },
     durationErrors () {
       const errors = []
+
       if (!this.$v.duration.$dirty) return errors
       !this.$v.duration.required && errors.push('Duration is required')
       return errors
     },
     distanceErrors () {
       const errors = []
+
       if (!this.$v.distance.$dirty) return errors
       !this.$v.distance.required && errors.push('Duration is required')
       return errors
@@ -206,6 +249,7 @@ export default {
 
   methods: {
     fillSelect (workoutType) {
+      // fill select element with exercises depending on workout type
       this.workoutType = workoutType
       this.select = null
       this.setNumber = null
@@ -236,15 +280,14 @@ export default {
       }
     },
     submit () {
-      /* const newWorkout = {
-        type: this.workoutType,
-        exercise: this.select,
-        setNumber: parseInt(this.setNumber),
-        repetitions: this.repetitions
-        timestamp: new Date().getTime()
-      } */
+      // show temporary success message after saving the new workout
+      this.showSuccess = true
+      setTimeout(function () {
+        this.showSuccess = false
+      }.bind(this), 3000)
     },
     clear () {
+      // clear the whole form
       this.$v.$reset()
       this.workoutType = ''
       this.setNumber = ''
