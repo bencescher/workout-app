@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import db from '../firebase/init'
+import db from '../firebase/initDatabase'
 
 Vue.use(Vuex)
 
@@ -10,20 +10,31 @@ export default new Vuex.Store({
   },
   mutations: {
     'CREATE_WORKOUT' (state, workout) {
-      const newWorkout = {}
       const weightRepetitions = []
-
-      newWorkout.workouttype = workout.workouttype
-      newWorkout.exercise = workout.exercise
-      newWorkout.timestamp = workout.timestamp
 
       switch (workout.workouttype) {
         case 'cardio':
-          newWorkout.duration = workout.duration
-          newWorkout.distance = workout.distance
+          db.collection('workouts').add({
+            workouttype: workout.workouttype,
+            exercise: workout.exercise,
+            timestamp: workout.timestamp,
+            duration: workout.duration,
+            distance: workout.distance
+          })
+            .then(() => {
+              state.workouts.push(workout)
+            })
           break
         case 'own-weight':
-          newWorkout.repetitions = workout.repetitions
+          db.collection('workouts').add({
+            workouttype: workout.workouttype,
+            exercise: workout.exercise,
+            timestamp: workout.timestamp,
+            repetitions: workout.repetitions
+          })
+            .then(() => {
+              state.workouts.push(workout)
+            })
           break
         case 'weight':
           workout.repetitions.forEach(repetitionPair => {
@@ -31,17 +42,19 @@ export default new Vuex.Store({
               weightRepetitions.push(repetitionPaitItem)
             })
           })
-          newWorkout.repetitions = weightRepetitions
+          db.collection('workouts').add({
+            workouttype: workout.workouttype,
+            exercise: workout.exercise,
+            timestamp: workout.timestamp,
+            repetitions: weightRepetitions
+          })
+            .then(() => {
+              state.workouts.push(workout)
+            })
           break
         default:
           break
       }
-      db.collection('workouts').add({
-        newWorkout
-      })
-        .then(() => {
-          state.workouts.push(workout)
-        })
     },
 
     'SET_WORKOUT' (state) {

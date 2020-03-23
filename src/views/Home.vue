@@ -60,7 +60,7 @@
                       stroke-linecap="round"
                       smooth
                       auto-draw
-                      auto-draw-duration="1000"
+                      :auto-draw-duration=drawDuration
                     >
                       <template v-slot:label="periodsFiltered">
                         {{ periodsFiltered.value }}
@@ -94,7 +94,7 @@
                       stroke-linecap="round"
                       smooth
                       auto-draw
-                      auto-draw-duration="1000"
+                      :auto-draw-duration=drawDuration
                     >
                       <template v-slot:label="periodsFiltered">
                         {{ periodsFiltered.value }}
@@ -124,7 +124,7 @@
                       :value="valuesFiltered"
                       :labels="periodsFiltered"
                       auto-draw
-                      auto-draw-duration="1000"
+                      :auto-draw-duration=drawDuration
                       color="#FFC107"
                       height="100"
                       padding="24"
@@ -158,7 +158,7 @@
                       :value="valuesFiltered"
                       :labels="periodsFiltered"
                       auto-draw
-                      auto-draw-duration="1000"
+                      :auto-draw-duration=drawDuration
                       color="#FFC107"
                       height="100"
                       padding="24"
@@ -198,7 +198,7 @@
                       padding="24"
                       type="bar"
                       auto-draw
-                      auto-draw-duration="1000"
+                      :auto-draw-duration=drawDuration
                       stroke-linecap="round"
                       smooth
                     >
@@ -229,7 +229,7 @@
                       :value="valuesFiltered"
                       :labels="periodsFiltered"
                       auto-draw
-                      auto-draw-duration="1000"
+                      :auto-draw-duration=drawDuration
                       color="#FFC107"
                       height="100"
                       padding="24"
@@ -256,6 +256,7 @@ export default {
   name: 'Home',
   data () {
     return {
+      drawDuration: 1000,
       // change flag for period frequency select item
       isInitialPeriodFrequency: true,
       // change flag for period number select item

@@ -15,7 +15,7 @@
               {{ item.name }}
             </v-list-item-title>
           </v-list-item>
-          <v-list-item v-if="user" @click="logout">
+          <v-list-item v-if="currentUser" @click="logout">
             <v-list-item-icon>
               <v-icon color="primary">mdi-logout</v-icon>
             </v-list-item-icon>
@@ -31,7 +31,7 @@
       <v-toolbar-title>Workoutapp</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-xs-only">
-        <v-btn text to="/home" v-if="user" class="mx-2">
+        <v-btn text to="/home" v-if="currentUser" class="mx-2">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-icon color="primary" v-on="on">mdi-home</v-icon>
@@ -39,7 +39,7 @@
             <span>Display statistics</span>
           </v-tooltip>
         </v-btn>
-        <v-btn text v-if="user" to="/new" class="mx-2">
+        <v-btn text v-if="currentUser" to="/new" class="mx-2">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-icon color="primary" v-on="on">mdi-plus</v-icon>
@@ -47,7 +47,7 @@
             <span>Add new workout</span>
           </v-tooltip>
         </v-btn>
-        <v-btn text to="/log" v-if="user" class="mx-2">
+        <v-btn text to="/log" v-if="currentUser" class="mx-2">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-icon color="primary" v-on="on">mdi-format-list-bulleted-square</v-icon>
@@ -55,7 +55,7 @@
             <span>Show workout log</span>
           </v-tooltip>
         </v-btn>
-        <v-btn text @click="register" to="/register" v-if="!user" class="mx-2">
+        <v-btn text to="/register" v-if="!currentUser" class="mx-2">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-icon color="primary" v-on="on">mdi-account-plus</v-icon>
@@ -63,7 +63,7 @@
             <span>Register</span>
           </v-tooltip>
         </v-btn>
-        <v-btn text @click="login" v-if="!user" class="mx-2">
+        <v-btn text to="/login" v-if="!currentUser" class="mx-2">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-icon color="primary" v-on="on">mdi-login</v-icon>
@@ -71,7 +71,7 @@
             <span>Log in</span>
           </v-tooltip>
         </v-btn>
-        <v-btn text @click="logout" v-if="user" class="mx-2">
+        <v-btn text @click="logout" v-if="currentUser" class="mx-2">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-icon color="primary" v-on="on">mdi-logout</v-icon>
@@ -85,19 +85,21 @@
 </template>
 
 <script>
+import firebase from 'firebase'
+
 export default {
   name: 'Menu',
 
   data () {
     return {
       sideNav: null,
-      user: null
+      currentUser: null
     }
   },
 
   computed: {
     drawerItems () {
-      if (this.user) {
+      if (this.currentUser) {
         return [
           {
             name: 'Display statistics',
@@ -132,16 +134,18 @@ export default {
     }
   },
 
+  created () {
+    if (firebase.auth().currentUser) {
+      this.currentUser = firebase.auth().currentUser.email
+    }
+  },
+
   methods: {
-    register () {
-      this.user = 'Tester'
-    },
-    login () {
-      this.user = 'Tester'
-    },
     logout () {
-      this.user = null
-      this.$router.push('/')
+      firebase.auth().signOut()
+        .then(() => {
+          this.$router.go({ path: this.$router.path })
+        })
     }
   }
 }
