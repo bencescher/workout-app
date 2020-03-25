@@ -8,6 +8,7 @@
             @blur="$v.email.$touch()"
             clearable
             :error-messages="emailErrors"
+            @input="$v.email.$touch()"
             label="E-mail address"
             outlined
             required
@@ -21,6 +22,7 @@
             counter
             :error-messages="passwordErrors"
             hint="At least 8 characters"
+            @input="$v.password.$touch()"
             label="Password"
             outlined
             required

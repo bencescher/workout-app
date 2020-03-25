@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import firebase from 'firebase'
 import db from '../firebase/initDatabase'
 
 Vue.use(Vuex)
@@ -11,6 +12,9 @@ export default new Vuex.Store({
   mutations: {
     'CREATE_WORKOUT' (state, workout) {
       const weightRepetitions = []
+      const user = firebase.auth().currentUser.email
+
+      workout.user = user
 
       switch (workout.workouttype) {
         case 'cardio':
@@ -19,7 +23,8 @@ export default new Vuex.Store({
             exercise: workout.exercise,
             timestamp: workout.timestamp,
             duration: workout.duration,
-            distance: workout.distance
+            distance: workout.distance,
+            user: user
           })
             .then(() => {
               state.workouts.push(workout)
@@ -30,7 +35,8 @@ export default new Vuex.Store({
             workouttype: workout.workouttype,
             exercise: workout.exercise,
             timestamp: workout.timestamp,
-            repetitions: workout.repetitions
+            repetitions: workout.repetitions,
+            user: user
           })
             .then(() => {
               state.workouts.push(workout)
@@ -46,7 +52,8 @@ export default new Vuex.Store({
             workouttype: workout.workouttype,
             exercise: workout.exercise,
             timestamp: workout.timestamp,
-            repetitions: weightRepetitions
+            repetitions: weightRepetitions,
+            user: user
           })
             .then(() => {
               state.workouts.push(workout)
@@ -58,41 +65,45 @@ export default new Vuex.Store({
     },
 
     'SET_WORKOUT' (state) {
+      const user = firebase.auth().currentUser.email
+
       db.collection('workouts').get()
         .then(storedWorkouts => {
           storedWorkouts.forEach(workoutDoc => {
-            const workout = workoutDoc.data()
-            const currentWorkout = {}
-            let repetition = []
+            if (workoutDoc.data().user === user) {
+              const workout = workoutDoc.data()
+              const currentWorkout = {}
+              let repetition = []
 
-            currentWorkout.workouttype = workout.workouttype
-            currentWorkout.exercise = workout.exercise
-            currentWorkout.timestamp = workout.timestamp
+              currentWorkout.workouttype = workout.workouttype
+              currentWorkout.exercise = workout.exercise
+              currentWorkout.timestamp = workout.timestamp
 
-            switch (workout.workouttype) {
-              case 'cardio':
-                currentWorkout.duration = workout.duration
-                currentWorkout.distance = workout.distance
-                break
-              case 'own-weight':
-                currentWorkout.repetitions = workout.repetitions
-                break
-              case 'weight':
-                currentWorkout.repetitions = []
+              switch (workout.workouttype) {
+                case 'cardio':
+                  currentWorkout.duration = workout.duration
+                  currentWorkout.distance = workout.distance
+                  break
+                case 'own-weight':
+                  currentWorkout.repetitions = workout.repetitions
+                  break
+                case 'weight':
+                  currentWorkout.repetitions = []
 
-                for (let i = 0; i < workout.repetitions.length; i++) {
-                  repetition.push(workout.repetitions[i])
+                  for (let i = 0; i < workout.repetitions.length; i++) {
+                    repetition.push(workout.repetitions[i])
 
-                  if (repetition.length === 2) {
-                    currentWorkout.repetitions.push(repetition)
-                    repetition = []
+                    if (repetition.length === 2) {
+                      currentWorkout.repetitions.push(repetition)
+                      repetition = []
+                    }
                   }
-                }
-                break
-              default:
-                break
+                  break
+                default:
+                  break
+              }
+              state.workouts.push(currentWorkout)
             }
-            state.workouts.push(currentWorkout)
           })
         })
     }

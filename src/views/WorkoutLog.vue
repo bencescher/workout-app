@@ -28,6 +28,9 @@
               <v-col cols="8">
                 {{ workout.exercise }}
               </v-col>
+              <v-col cols="3">
+                <span class="text--secondary">{{ workout.workoutDate }}</span>
+              </v-col>
             </v-row>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
@@ -163,10 +166,19 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   computed: {
     workouts () {
-      return this.$store.getters.workouts
+      const savedWorkouts = this.$store.getters.workouts
+
+      // add formatted date attribute to each workout
+      savedWorkouts.forEach(workout => {
+        workout.workoutDate = moment(workout.timestamp).format('hh:mm | ddd DD MMMM YYYY')
+      })
+      // sort the workouts in descending order by time (latest on top)
+      return savedWorkouts.sort((a, b) => b.timestamp - a.timestamp)
     }
   }
 }

@@ -252,16 +252,18 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   name: 'Home',
   data () {
     return {
+      currentDate: new Date(),
       drawDuration: 1000,
       // change flag for period frequency select item
       isInitialPeriodFrequency: true,
       // change flag for period number select item
       isInitialPeriodNumber: true,
-
       initialPeriodFrequency: {
         // initial option selected in period frequency select item
         id: 'day',
@@ -272,7 +274,6 @@ export default {
         id: 4,
         text: 'Four'
       },
-
       chartValues: [
         423,
         446,
@@ -312,35 +313,38 @@ export default {
           id: 6,
           text: 'Six'
         }
-      ],
-      periodDays: [
-        '13 March',
-        '14 March',
-        '15 March',
-        '16 March',
-        '17 March',
-        '18 March'
-      ],
-      periodWeeks: [
-        '7th week',
-        '8th week',
-        '9th week',
-        '10th week',
-        '11th week',
-        '12th week'
-      ],
-      periodMonths: [
-        'October',
-        'November',
-        'December',
-        'January',
-        'February',
-        'March'
       ]
     }
   },
 
   computed: {
+    periodDays () {
+      const days = []
+
+      for (let i = 5; i >= 0; i--) {
+        days.push(moment(this.currentDate).subtract(i, 'days').format('DD MMMM'))
+      }
+
+      return days
+    },
+    periodWeeks () {
+      const weeks = []
+
+      for (let i = 5; i >= 0; i--) {
+        weeks.push(moment(this.currentDate).subtract(i, 'weeks').format('Wo') + ' week')
+      }
+
+      return weeks
+    },
+    periodMonths () {
+      const months = []
+
+      for (let i = 5; i >= 0; i--) {
+        months.push(moment(this.currentDate).subtract(i, 'months').format('MMMM'))
+      }
+
+      return months
+    },
     periodsFiltered () {
       if (this.isInitialPeriodNumber) {
         return this.filterPeriods(this.initialPeriodNumber.id)
@@ -367,7 +371,7 @@ export default {
 
   methods: {
     periodChange () {
-      console.log(this.filterPeriods())
+      // console.log(this.filterPeriods())
     },
     filterPeriods (filterCounter) {
       if (this.initialPeriodFrequency.id === 'day' || this.initialPeriodFrequency === 'day') {
