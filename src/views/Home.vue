@@ -47,20 +47,21 @@
                 dark
               >
                 <v-card-text>
-                  <div class="display-1 font-weight-light">Total workout activity</div>
+                  <div class="display-1 font-weight-light">Total workout duration</div>
                 </v-card-text>
                 <v-card-text>
                   <v-sheet>
                     <v-sparkline
-                      :value="valuesFiltered"
-                      :labels="periodsFiltered"
+                      auto-draw
+                      :auto-draw-duration=drawDuration
                       color="#FFC107"
                       height="100"
+                      :labels="periodsFiltered"
                       padding="24"
                       stroke-linecap="round"
                       smooth
-                      auto-draw
-                      :auto-draw-duration=drawDuration
+                      type="bar"
+                      :value="valuesFiltered"
                     >
                       <template v-slot:label="periodsFiltered">
                         {{ periodsFiltered.value }}
@@ -274,14 +275,6 @@ export default {
         id: 4,
         text: 'Four'
       },
-      chartValues: [
-        423,
-        446,
-        675,
-        510,
-        590,
-        660
-      ],
       periodFrequencyItems: [
         {
           id: 'day',
@@ -318,7 +311,11 @@ export default {
   },
 
   computed: {
+    workouts () {
+      return this.$store.getters.workouts
+    },
     periodDays () {
+      // array of past 6 days
       const days = []
 
       for (let i = 5; i >= 0; i--) {
@@ -328,6 +325,7 @@ export default {
       return days
     },
     periodWeeks () {
+      // array of past 6 weeks
       const weeks = []
 
       for (let i = 5; i >= 0; i--) {
@@ -337,6 +335,7 @@ export default {
       return weeks
     },
     periodMonths () {
+      // array of past 6 months
       const months = []
 
       for (let i = 5; i >= 0; i--) {
@@ -346,6 +345,7 @@ export default {
       return months
     },
     periodsFiltered () {
+      // adjust the length of periods to the selected period length
       if (this.isInitialPeriodNumber) {
         return this.filterPeriods(this.initialPeriodNumber.id)
       } else {
@@ -353,6 +353,7 @@ export default {
       }
     },
     valuesFiltered () {
+      // adjust the length of values to the selected period length
       if (this.isInitialPeriodNumber) {
         return this.filterValues(this.initialPeriodNumber.id)
       } else {
@@ -363,9 +364,8 @@ export default {
 
   watch: {
     initialPeriodNumber: function () {
+      // change initial flag on period number change
       this.isInitialPeriodNumber = false
-      this.filterPeriods(this.initialPeriodNumber)
-      this.filterValues(this.initialPeriodNumber)
     }
   },
 
@@ -374,42 +374,96 @@ export default {
       // console.log(this.filterPeriods())
     },
     filterPeriods (filterCounter) {
-      if (this.initialPeriodFrequency.id === 'day' || this.initialPeriodFrequency === 'day') {
-        const daysFiltered = []
+      const frequency = this.initialPeriodFrequency
+      const filteredItems = []
+      let originalItems = []
 
-        for (let i = (this.periodDays.length - filterCounter); i < this.periodDays.length; i++) {
-          daysFiltered.push(this.periodDays[i])
-        }
-
-        return daysFiltered
-      } else if (this.initialPeriodFrequency === 'week') {
-        const weeksFiltered = []
-
-        for (let i = (this.periodWeeks.length - filterCounter); i < this.periodWeeks.length; i++) {
-          weeksFiltered.push(this.periodWeeks[i])
-        }
-
-        return weeksFiltered
-      } else if (this.initialPeriodFrequency === 'month') {
-        const monthsFiltered = []
-
-        for (let i = (this.periodMonths.length - filterCounter); i < this.periodMonths.length; i++) {
-          monthsFiltered.push(this.periodMonths[i])
-        }
-
-        return monthsFiltered
-      } else {
-        return null
+      if (frequency.id === 'day' || frequency === 'day') {
+        originalItems = this.periodDays
+      } else if (frequency === 'week') {
+        originalItems = this.periodWeeks
+      } else if (frequency === 'month') {
+        originalItems = this.periodMonths
       }
+
+      for (let i = (originalItems.length - filterCounter); i < originalItems.length; i++) {
+        filteredItems.push(originalItems[i])
+      }
+
+      return filteredItems
+    },
+    calculateDurations () {
+      const durations = []
+      let duration = 0
+
+      this.workouts.forEach(workout => {
+        duration = 0
+        switch (workout.workouttype) {
+          case 'cardio':
+            duration = parseInt(
+              workout.duration.substring(0, 2)) +
+              (workout.duration.substring(3, 5) / 60
+              )
+            break
+          case 'own-weight':
+            workout.repetitions.forEach(repetition => {
+              duration += (parseInt(repetition) * 4) / 60 + 0.5
+            })
+            break
+          case 'weight':
+            for (let i = 0; i < workout.repetitions.length; i++) {
+              if (i % 2 !== 0) {
+                duration += (parseInt(workout.repetitions[i]) * 4) / 60 + 1
+              }
+            }
+            break
+          default:
+            break
+        }
+        durations.push({
+          duration: duration,
+          timestamp: workout.timestamp,
+          workouttype: workout.workouttype
+        })
+      })
+
+      return durations
     },
     filterValues (filterCounter) {
-      const values = []
+      const frequency = this.initialPeriodFrequency
+      const originalDurations = this.calculateDurations()
+      const cumulatedDurations = []
 
       for (let i = 0; i < filterCounter; i++) {
-        values.push(this.chartValues[i])
+        cumulatedDurations.push(0)
       }
 
-      return values
+      if (frequency.id === 'day' || frequency === 'day') {
+        originalDurations.forEach(value => {
+          for (let i = 0; i < filterCounter; i++) {
+            if (this.periodsFiltered[i] === moment(value.timestamp).format('DD MMMM')) {
+              cumulatedDurations[i] += value.duration
+            }
+          }
+        })
+      } else if (frequency === 'week') {
+        originalDurations.forEach(value => {
+          for (let i = 0; i < filterCounter; i++) {
+            if (this.periodsFiltered[i] === moment(value.timestamp).format('Wo') + ' week') {
+              cumulatedDurations[i] += value.duration
+            }
+          }
+        })
+      } else if (frequency === 'month') {
+        originalDurations.forEach(value => {
+          for (let i = 0; i < filterCounter; i++) {
+            if (this.periodsFiltered[i] === moment(value.timestamp).format('MMMM')) {
+              cumulatedDurations[i] += value.duration
+            }
+          }
+        })
+      }
+      return cumulatedDurations
     }
   }
 }
