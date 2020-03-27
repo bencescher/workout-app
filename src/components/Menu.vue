@@ -23,6 +23,14 @@
               Log out
             </v-list-item-title>
           </v-list-item>
+          <v-list-item disabled v-if="currentUser">
+            <v-list-item-icon>
+              <v-icon disabled>mdi-account-circle</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title class="text--secondary">
+              {{ currentUser }}
+            </v-list-item-title>
+          </v-list-item>
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
@@ -145,6 +153,9 @@ export default {
       firebase.auth().signOut()
         .then(() => {
           this.$router.go({ path: this.$router.path })
+        })
+        .catch(error => {
+          alert(error)
         })
     }
   }

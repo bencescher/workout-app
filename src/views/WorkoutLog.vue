@@ -6,8 +6,8 @@
     >
       <v-expansion-panels focusable>
         <v-expansion-panel
-          v-for="(workout, index) in workouts"
-          :key="index"
+          v-for="workout in workouts"
+          :key="workout.id"
         >
           <v-expansion-panel-header class="pa-6">
             <v-row no-gutters>
@@ -158,6 +158,18 @@
                 </v-card>
               </v-col>
             </v-row>
+            <v-row>
+              <v-col cols="12" class="text-center">
+                <v-btn
+                  @click="removeWorkout(workout.id)"
+                  color="primary"
+                  text
+                >
+                  <v-icon>mdi-trash-can-outline</v-icon>
+                  Remove
+                </v-btn>
+              </v-col>
+            </v-row>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -167,18 +179,38 @@
 
 <script>
 import moment from 'moment'
+import db from '../firebase/initDatabase.js'
 
 export default {
-  computed: {
-    workouts () {
-      const savedWorkouts = this.$store.getters.workouts
+  data: () => {
+    return {
+      workouts: []
+    }
+  },
 
-      // add formatted date attribute to each workout
-      savedWorkouts.forEach(workout => {
-        workout.workoutDate = moment(workout.timestamp).format('hh:mm | ddd DD MMMM YYYY')
-      })
-      // sort the workouts in descending order by time (latest on top)
-      return savedWorkouts.sort((a, b) => b.timestamp - a.timestamp)
+  created () {
+    const savedWorkouts = this.$store.getters.workouts
+
+    // add formatted date attribute to each workout
+    savedWorkouts.forEach(workout => {
+      workout.workoutDate = moment(workout.timestamp).format('hh:mm | ddd DD MMMM YYYY')
+    })
+    // sort the workouts in descending order by time (latest on top)
+    this.workouts = savedWorkouts.sort((a, b) => b.timestamp - a.timestamp)
+  },
+
+  methods: {
+    removeWorkout (id) {
+      db.collection('workouts').doc(id).delete()
+        .then(() => {
+          this.$store.dispatch('initWorkouts')
+          this.workouts = this.workouts.filter(workout => {
+            return workout.id !== id
+          })
+        })
+        .catch(error => {
+          alert(error)
+        })
     }
   }
 }

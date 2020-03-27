@@ -313,6 +313,9 @@ export default {
       }
 
       this.$store.dispatch('createWorkout', newWorkout)
+        .then(() => {
+          this.$store.dispatch('initWorkouts')
+        })
       // show temporary success message after saving the new workout
       this.showSuccess = true
       this.clear()

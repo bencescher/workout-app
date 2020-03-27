@@ -26,9 +26,6 @@ export default new Vuex.Store({
             distance: workout.distance,
             user: user
           })
-            .then(() => {
-              state.workouts.push(workout)
-            })
           break
         case 'own-weight':
           db.collection('workouts').add({
@@ -38,9 +35,6 @@ export default new Vuex.Store({
             repetitions: workout.repetitions,
             user: user
           })
-            .then(() => {
-              state.workouts.push(workout)
-            })
           break
         case 'weight':
           workout.repetitions.forEach(repetitionPair => {
@@ -55,9 +49,6 @@ export default new Vuex.Store({
             repetitions: weightRepetitions,
             user: user
           })
-            .then(() => {
-              state.workouts.push(workout)
-            })
           break
         default:
           break
@@ -65,6 +56,7 @@ export default new Vuex.Store({
     },
 
     'SET_WORKOUT' (state) {
+      state.workouts = []
       const user = firebase.auth().currentUser.email
 
       db.collection('workouts').get()
@@ -75,6 +67,7 @@ export default new Vuex.Store({
               const currentWorkout = {}
               let repetition = []
 
+              currentWorkout.id = workoutDoc.id
               currentWorkout.workouttype = workout.workouttype
               currentWorkout.exercise = workout.exercise
               currentWorkout.timestamp = workout.timestamp

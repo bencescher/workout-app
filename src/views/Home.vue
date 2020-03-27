@@ -19,7 +19,6 @@
                   item-value="id"
                   label="Period frequency"
                   outlined
-                  @change="periodChange"
                 ></v-select>
               </v-col>
               <v-col>
@@ -30,7 +29,6 @@
                   item-value="id"
                   label="Period number"
                   outlined
-                  @change="periodChange"
                 ></v-select>
               </v-col>
             </v-row>
@@ -306,7 +304,8 @@ export default {
           id: 6,
           text: 'Six'
         }
-      ]
+      ],
+      valuesFiltered: []
     }
   },
 
@@ -351,28 +350,30 @@ export default {
       } else {
         return this.filterPeriods(this.initialPeriodNumber)
       }
-    },
-    valuesFiltered () {
-      // adjust the length of values to the selected period length
-      if (this.isInitialPeriodNumber) {
-        return this.filterValues(this.initialPeriodNumber.id)
-      } else {
-        return this.filterValues(this.initialPeriodNumber)
-      }
     }
+  },
+
+  created () {
+    this.valuesFiltered = this.filterValues(this.initialPeriodNumber.id)
   },
 
   watch: {
     initialPeriodNumber: function () {
       // change initial flag on period number change
       this.isInitialPeriodNumber = false
+      this.valuesFiltered = this.filterValues(this.initialPeriodNumber)
+    },
+    initialPeriodFrequency: function () {
+      this.isInitialPeriodFrequency = false
+      if (this.isInitialPeriodNumber) {
+        this.filterValues(this.initialPeriodNumber.id)
+      } else {
+        this.valuesFiltered = this.filterValues(this.initialPeriodNumber)
+      }
     }
   },
 
   methods: {
-    periodChange () {
-      // console.log(this.filterPeriods())
-    },
     filterPeriods (filterCounter) {
       const frequency = this.initialPeriodFrequency
       const filteredItems = []
