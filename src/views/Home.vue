@@ -49,22 +49,6 @@
                 </v-card-text>
                 <v-card-text>
                   <v-sheet>
-                    <v-sparkline
-                      auto-draw
-                      :auto-draw-duration=drawDuration
-                      color="#FFC107"
-                      height="100"
-                      :labels="periodsFiltered"
-                      padding="24"
-                      stroke-linecap="round"
-                      smooth
-                      type="bar"
-                      :value="valuesFiltered"
-                    >
-                      <template v-slot:label="periodsFiltered">
-                        {{ periodsFiltered.value }}
-                      </template>
-                    </v-sparkline>
                   </v-sheet>
                 </v-card-text>
               </v-card>
@@ -83,22 +67,6 @@
                 </v-card-text>
                 <v-card-text>
                   <v-sheet color="tertiary lighten-1">
-                    <v-sparkline
-                      :value="valuesFiltered"
-                      :labels="periodsFiltered"
-                      type="bar"
-                      color="#FFC107"
-                      height="100"
-                      padding="24"
-                      stroke-linecap="round"
-                      smooth
-                      auto-draw
-                      :auto-draw-duration=drawDuration
-                    >
-                      <template v-slot:label="periodsFiltered">
-                        {{ periodsFiltered.value }}
-                      </template>
-                    </v-sparkline>
                   </v-sheet>
                 </v-card-text>
               </v-card>
@@ -119,21 +87,6 @@
                 </v-card-text>
                 <v-card-text>
                   <v-sheet color="tertiary lighten-1">
-                    <v-sparkline
-                      :value="valuesFiltered"
-                      :labels="periodsFiltered"
-                      auto-draw
-                      :auto-draw-duration=drawDuration
-                      color="#FFC107"
-                      height="100"
-                      padding="24"
-                      stroke-linecap="round"
-                      smooth
-                    >
-                      <template v-slot:label="periodsFiltered">
-                        {{ periodsFiltered.value }}
-                      </template>
-                    </v-sparkline>
                   </v-sheet>
                 </v-card-text>
               </v-card>
@@ -153,21 +106,6 @@
                 </v-card-text>
                 <v-card-text>
                   <v-sheet color="rgba(0, 0, 0, .12)">
-                    <v-sparkline
-                      :value="valuesFiltered"
-                      :labels="periodsFiltered"
-                      auto-draw
-                      :auto-draw-duration=drawDuration
-                      color="#FFC107"
-                      height="100"
-                      padding="24"
-                      stroke-linecap="round"
-                      smooth
-                    >
-                      <template v-slot:label="periodsFiltered">
-                        {{ periodsFiltered.value }}
-                      </template>
-                    </v-sparkline>
                   </v-sheet>
                 </v-card-text>
               </v-card>
@@ -189,22 +127,6 @@
                 </v-card-text>
                 <v-card-text>
                   <v-sheet color="rgba(0, 0, 0, .12)">
-                    <v-sparkline
-                      :value="valuesFiltered"
-                      :labels="periodsFiltered"
-                      color="#FFC107"
-                      height="100"
-                      padding="24"
-                      type="bar"
-                      auto-draw
-                      :auto-draw-duration=drawDuration
-                      stroke-linecap="round"
-                      smooth
-                    >
-                      <template v-slot:label="periodsFiltered">
-                        {{ periodsFiltered.value }}
-                      </template>
-                    </v-sparkline>
                   </v-sheet>
                 </v-card-text>
               </v-card>
@@ -224,21 +146,6 @@
                 </v-card-text>
                 <v-card-text>
                   <v-sheet color="rgba(0, 0, 0, .12)">
-                    <v-sparkline
-                      :value="valuesFiltered"
-                      :labels="periodsFiltered"
-                      auto-draw
-                      :auto-draw-duration=drawDuration
-                      color="#FFC107"
-                      height="100"
-                      padding="24"
-                      stroke-linecap="round"
-                      smooth
-                    >
-                      <template v-slot:label="periodsFiltered">
-                        {{ periodsFiltered.value }}
-                      </template>
-                    </v-sparkline>
                   </v-sheet>
                 </v-card-text>
               </v-card>
@@ -255,144 +162,109 @@ import moment from 'moment'
 
 export default {
   name: 'Home',
+
   data () {
     return {
       currentDate: new Date(),
-      drawDuration: 1000,
-      // change flag for period frequency select item
-      isInitialPeriodFrequency: true,
-      // change flag for period number select item
-      isInitialPeriodNumber: true,
-      initialPeriodFrequency: {
-        // initial option selected in period frequency select item
-        id: 'day',
-        text: 'Daily'
-      },
-      initialPeriodNumber: {
-        // initial option selected in period numbers select item
-        id: 4,
-        text: 'Four'
-      },
+
+      // initial option selected in period frequency select item
+      initialPeriodFrequency: 'day',
+
+      // initial option selected in period numbers select item
+      initialPeriodNumber: 4,
+
       periodFrequencyItems: [
-        {
-          id: 'day',
-          text: 'Daily'
-        },
-        {
-          id: 'week',
-          text: 'Weekly'
-        },
-        {
-          id: 'month',
-          text: 'Monthly'
-        }
+        { id: 'day', text: 'Daily' },
+        { id: 'week', text: 'Weekly' },
+        { id: 'month', text: 'Monthly' }
       ],
+
       periodNumberItems: [
-        {
-          id: 3,
-          text: 'Three'
-        },
-        {
-          id: 4,
-          text: 'Four'
-        },
-        {
-          id: 5,
-          text: 'Five'
-        },
-        {
-          id: 6,
-          text: 'Six'
-        }
+        { id: 3, text: 'Three' },
+        { id: 4, text: 'Four' },
+        { id: 5, text: 'Five' },
+        { id: 6, text: 'Six' }
       ],
-      valuesFiltered: []
+
+      durations: []
     }
   },
 
   computed: {
     workouts () {
       return this.$store.getters.workouts
+    }
+  },
+
+  watch: {
+    initialPeriodNumber () {
+      switch (this.initialPeriodFrequency) {
+        case 'day':
+          console.log(this.calculateDays(this.initialPeriodNumber))
+          break
+        case 'week':
+          console.log(this.calculateWeeks(this.initialPeriodNumber))
+          break
+        case 'month':
+          console.log(this.calculateMonths(this.initialPeriodNumber))
+          break
+        default:
+          break
+      }
     },
-    periodDays () {
-      // array of past 6 days
+
+    initialPeriodFrequency () {
+      switch (this.initialPeriodFrequency) {
+        case 'day':
+          console.log(this.calculateDays(this.initialPeriodNumber))
+          break
+        case 'week':
+          console.log(this.calculateWeeks(this.initialPeriodNumber))
+          break
+        case 'month':
+          console.log(this.calculateMonths(this.initialPeriodNumber))
+          break
+        default:
+          break
+      }
+    },
+
+    workouts () {
+      this.durations = this.calculateDurations()
+    }
+  },
+
+  methods: {
+    calculateDays (periods) {
       const days = []
 
-      for (let i = 5; i >= 0; i--) {
+      for (let i = periods - 1; i >= 0; i--) {
         days.push(moment(this.currentDate).subtract(i, 'days').format('DD MMMM'))
       }
 
       return days
     },
-    periodWeeks () {
-      // array of past 6 weeks
+
+    calculateWeeks (periods) {
       const weeks = []
 
-      for (let i = 5; i >= 0; i--) {
+      for (let i = periods - 1; i >= 0; i--) {
         weeks.push(moment(this.currentDate).subtract(i, 'weeks').format('Wo') + ' week')
       }
 
       return weeks
     },
-    periodMonths () {
-      // array of past 6 months
+
+    calculateMonths (periods) {
       const months = []
 
-      for (let i = 5; i >= 0; i--) {
+      for (let i = periods - 1; i >= 0; i--) {
         months.push(moment(this.currentDate).subtract(i, 'months').format('MMMM'))
       }
 
       return months
     },
-    periodsFiltered () {
-      // adjust the length of periods to the selected period length
-      if (this.isInitialPeriodNumber) {
-        return this.filterPeriods(this.initialPeriodNumber.id)
-      } else {
-        return this.filterPeriods(this.initialPeriodNumber)
-      }
-    }
-  },
 
-  created () {
-    this.valuesFiltered = this.filterValues(this.initialPeriodNumber.id)
-  },
-
-  watch: {
-    initialPeriodNumber: function () {
-      // change initial flag on period number change
-      this.isInitialPeriodNumber = false
-      this.valuesFiltered = this.filterValues(this.initialPeriodNumber)
-    },
-    initialPeriodFrequency: function () {
-      this.isInitialPeriodFrequency = false
-      if (this.isInitialPeriodNumber) {
-        this.filterValues(this.initialPeriodNumber.id)
-      } else {
-        this.valuesFiltered = this.filterValues(this.initialPeriodNumber)
-      }
-    }
-  },
-
-  methods: {
-    filterPeriods (filterCounter) {
-      const frequency = this.initialPeriodFrequency
-      const filteredItems = []
-      let originalItems = []
-
-      if (frequency.id === 'day' || frequency === 'day') {
-        originalItems = this.periodDays
-      } else if (frequency === 'week') {
-        originalItems = this.periodWeeks
-      } else if (frequency === 'month') {
-        originalItems = this.periodMonths
-      }
-
-      for (let i = (originalItems.length - filterCounter); i < originalItems.length; i++) {
-        filteredItems.push(originalItems[i])
-      }
-
-      return filteredItems
-    },
     calculateDurations () {
       const durations = []
       let duration = 0
@@ -427,44 +299,7 @@ export default {
           workouttype: workout.workouttype
         })
       })
-
       return durations
-    },
-    filterValues (filterCounter) {
-      const frequency = this.initialPeriodFrequency
-      const originalDurations = this.calculateDurations()
-      const cumulatedDurations = []
-
-      for (let i = 0; i < filterCounter; i++) {
-        cumulatedDurations.push(0)
-      }
-
-      if (frequency.id === 'day' || frequency === 'day') {
-        originalDurations.forEach(value => {
-          for (let i = 0; i < filterCounter; i++) {
-            if (this.periodsFiltered[i] === moment(value.timestamp).format('DD MMMM')) {
-              cumulatedDurations[i] += value.duration
-            }
-          }
-        })
-      } else if (frequency === 'week') {
-        originalDurations.forEach(value => {
-          for (let i = 0; i < filterCounter; i++) {
-            if (this.periodsFiltered[i] === moment(value.timestamp).format('Wo') + ' week') {
-              cumulatedDurations[i] += value.duration
-            }
-          }
-        })
-      } else if (frequency === 'month') {
-        originalDurations.forEach(value => {
-          for (let i = 0; i < filterCounter; i++) {
-            if (this.periodsFiltered[i] === moment(value.timestamp).format('MMMM')) {
-              cumulatedDurations[i] += value.duration
-            }
-          }
-        })
-      }
-      return cumulatedDurations
     }
   }
 }
