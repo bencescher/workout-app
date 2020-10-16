@@ -14,7 +14,7 @@
               <v-col>
                 <v-select
                   :items="periodFrequencyItems"
-                  v-model="initialPeriodFrequency"
+                  v-model="selectedPeriodFrequency"
                   item-text="text"
                   item-value="id"
                   label="Period frequency"
@@ -24,7 +24,7 @@
               <v-col>
                 <v-select
                   :items="periodNumberItems"
-                  v-model="initialPeriodNumber"
+                  v-model="selectedPeriodNumber"
                   item-text="text"
                   item-value="id"
                   label="Period number"
@@ -49,6 +49,10 @@
                 </v-card-text>
                 <v-card-text>
                   <v-sheet>
+                    <bar-chart
+                      :chart-data="barTotalDataCollection"
+                      :options="barChartOptions"
+                    ></bar-chart>
                   </v-sheet>
                 </v-card-text>
               </v-card>
@@ -67,6 +71,10 @@
                 </v-card-text>
                 <v-card-text>
                   <v-sheet color="tertiary lighten-1">
+                    <bar-chart
+                      :chart-data="barOwnWeightDataCollection"
+                      :options="barChartOptions"
+                    ></bar-chart>
                   </v-sheet>
                 </v-card-text>
               </v-card>
@@ -87,6 +95,10 @@
                 </v-card-text>
                 <v-card-text>
                   <v-sheet color="tertiary lighten-1">
+                    <bar-chart
+                      :chart-data="barWeightDataCollection"
+                      :options="barChartOptions"
+                    ></bar-chart>
                   </v-sheet>
                 </v-card-text>
               </v-card>
@@ -106,46 +118,10 @@
                 </v-card-text>
                 <v-card-text>
                   <v-sheet color="rgba(0, 0, 0, .12)">
-                  </v-sheet>
-                </v-card-text>
-              </v-card>
-            </template>
-          </v-hover>
-        </v-col>
-      </v-row>
-      <v-row class="mb-2">
-        <v-col cols="12" md="6">
-          <v-hover>
-            <template v-slot="{ hover }">
-              <v-card
-                :elevation="hover ? 12 : 6"
-                dark
-                class="mx-auto pa-2 text-center"
-              >
-                <v-card-text>
-                  <div class="display-1 font-weight-light">Workout by type</div>
-                </v-card-text>
-                <v-card-text>
-                  <v-sheet color="rgba(0, 0, 0, .12)">
-                  </v-sheet>
-                </v-card-text>
-              </v-card>
-            </template>
-          </v-hover>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-hover>
-            <template v-slot="{ hover }">
-              <v-card
-                :elevation="hover ? 12 : 6"
-                dark
-                class="mx-auto pa-2 text-center"
-              >
-                <v-card-text>
-                  <div class="display-1 font-weight-light">Workout by anything</div>
-                </v-card-text>
-                <v-card-text>
-                  <v-sheet color="rgba(0, 0, 0, .12)">
+                    <bar-chart
+                      :chart-data="barCardioDataCollection"
+                      :options="barChartOptions"
+                    ></bar-chart>
                   </v-sheet>
                 </v-card-text>
               </v-card>
@@ -158,6 +134,7 @@
 </template>
 
 <script>
+import barChart from '../components/Bar.js'
 import moment from 'moment'
 
 export default {
@@ -168,10 +145,10 @@ export default {
       currentDate: new Date(),
 
       // initial option selected in period frequency select item
-      initialPeriodFrequency: 'day',
+      selectedPeriodFrequency: 'day',
 
       // initial option selected in period numbers select item
-      initialPeriodNumber: 4,
+      selectedPeriodNumber: 4,
 
       periodFrequencyItems: [
         { id: 'day', text: 'Daily' },
@@ -186,8 +163,52 @@ export default {
         { id: 6, text: 'Six' }
       ],
 
-      durations: []
+      activePeriods: [],
+
+      durations: [],
+
+      barTotalDataCollection: {},
+
+      barWeightDataCollection: {},
+
+      barOwnWeightDataCollection: {},
+
+      barCardioDataCollection: {},
+
+      barChartOptions: {
+        scales: {
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              fontColor: 'rgba(255, 255, 255, .8)',
+              fontSize: 14,
+              labelString: 'Minutes'
+            },
+            ticks: {
+              fontColor: 'rgba(255, 255, 255, .8)',
+              beginAtZero: true
+            }
+          }],
+          xAxes: [{
+            ticks: {
+              fontColor: 'rgba(255, 255, 255, .8)'
+            }
+          }]
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+          labels: {
+            fontColor: 'rgba(255, 255, 255, .8)',
+            fontSize: 14
+          }
+        }
+      }
     }
+  },
+
+  components: {
+    'bar-chart': barChart
   },
 
   computed: {
@@ -197,75 +218,134 @@ export default {
   },
 
   watch: {
-    initialPeriodNumber () {
-      switch (this.initialPeriodFrequency) {
-        case 'day':
-          console.log(this.calculateDays(this.initialPeriodNumber))
-          break
-        case 'week':
-          console.log(this.calculateWeeks(this.initialPeriodNumber))
-          break
-        case 'month':
-          console.log(this.calculateMonths(this.initialPeriodNumber))
-          break
-        default:
-          break
-      }
+    selectedPeriodNumber () {
+      this.calculateActivePeriod()
+      this.fillBarCharts()
     },
 
-    initialPeriodFrequency () {
-      switch (this.initialPeriodFrequency) {
-        case 'day':
-          console.log(this.calculateDays(this.initialPeriodNumber))
-          break
-        case 'week':
-          console.log(this.calculateWeeks(this.initialPeriodNumber))
-          break
-        case 'month':
-          console.log(this.calculateMonths(this.initialPeriodNumber))
-          break
-        default:
-          break
-      }
+    selectedPeriodFrequency () {
+      this.calculateActivePeriod()
+      this.fillBarCharts()
     },
 
     workouts () {
       this.durations = this.calculateDurations()
+      this.fillBarCharts()
     }
   },
 
+  created () {
+    this.$store.dispatch('initWorkouts')
+    this.calculateActivePeriod()
+  },
+
   methods: {
-    calculateDays (periods) {
-      const days = []
-
-      for (let i = periods - 1; i >= 0; i--) {
-        days.push(moment(this.currentDate).subtract(i, 'days').format('DD MMMM'))
-      }
-
-      return days
+    calculateActivePeriod () {
+      this.activePeriods = this.calculatePeriodList(this.selectedPeriodNumber)
     },
 
-    calculateWeeks (periods) {
-      const weeks = []
+    calculatePeriodList (periods) {
+      const periodList = []
 
       for (let i = periods - 1; i >= 0; i--) {
-        weeks.push(moment(this.currentDate).subtract(i, 'weeks').format('Wo') + ' week')
+        switch (this.selectedPeriodFrequency) {
+          case 'day':
+            periodList.push(moment(this.currentDate).subtract(i, 'days').format('DD MMMM'))
+            break
+          case 'week':
+            periodList.push(moment(this.currentDate).subtract(i, 'weeks').format('Wo') + ' week')
+            break
+          case 'month':
+            periodList.push(moment(this.currentDate).subtract(i, 'months').format('MMMM'))
+            break
+          default:
+            break
+        }
       }
 
-      return weeks
+      return periodList
     },
 
-    calculateMonths (periods) {
-      const months = []
+    fillWorkoutsCharts (workoutType, color) {
+      const dataset = []
 
-      for (let i = periods - 1; i >= 0; i--) {
-        months.push(moment(this.currentDate).subtract(i, 'months').format('MMMM'))
+      for (let i = 0; i < this.activePeriods.length; i++) {
+        dataset.push(0)
       }
 
-      return months
+      this.durations.forEach(workout => {
+        for (let i = 0; i < this.activePeriods.length; i++) {
+          let formattedTimestamp = ''
+
+          switch (this.selectedPeriodFrequency) {
+            case 'day':
+              formattedTimestamp = moment(workout.timestamp).format('DD MMMM')
+              break
+            case 'week':
+              formattedTimestamp = moment(workout.timestamp).format('Wo') + ' week'
+              break
+            case 'month':
+              formattedTimestamp = moment(workout.timestamp).format('MMMM')
+              break
+            default:
+              break
+          }
+
+          if (formattedTimestamp === this.activePeriods[i]) {
+            if (workoutType === 'total') {
+              dataset[i] += +workout.duration.toFixed(2)
+            } else {
+              if (workout.workouttype === workoutType) {
+                dataset[i] += +workout.duration.toFixed(2)
+              }
+            }
+          }
+        }
+      })
+
+      const calculatedData = this.displayBarChart(dataset, this.activePeriods, 'Duration in minutes', color)
+
+      switch (workoutType) {
+        case 'total':
+          this.barTotalDataCollection = calculatedData
+          break
+        case 'own-weight':
+          this.barOwnWeightDataCollection = calculatedData
+          break
+        case 'weight':
+          this.barWeightDataCollection = calculatedData
+          break
+        case 'cardio':
+          this.barCardioDataCollection = calculatedData
+          break
+        default:
+          break
+      }
+    },
+
+    fillBarCharts () {
+      this.fillWorkoutsCharts('total', '#EEFF82')
+      this.fillWorkoutsCharts('own-weight', '#6E97FF')
+      this.fillWorkoutsCharts('weight', '#8FFF87')
+      this.fillWorkoutsCharts('cardio', '#FF8578')
+    },
+
+    displayBarChart (dataset, labels, label, color) {
+      return {
+        labels: labels,
+        datasets: [
+          {
+            backgroundColor: color,
+            barThickness: 20,
+            data: dataset,
+            label: label
+          }
+        ]
+      }
     },
 
     calculateDurations () {
+      // calculate the total time consumption of each workout
       const durations = []
       let duration = 0
 
@@ -295,10 +375,11 @@ export default {
         }
         durations.push({
           duration: duration,
-          timestamp: workout.timestamp,
+          timestamp: new Date(workout.timestamp),
           workouttype: workout.workouttype
         })
       })
+
       return durations
     }
   }
