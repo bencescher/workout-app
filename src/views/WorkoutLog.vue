@@ -5,8 +5,9 @@
       max-width="900"
     >
       <v-expansion-panels focusable>
+        <h1 class="display-1 mb-4">Workout log</h1>
         <v-expansion-panel
-          v-for="workout in workouts"
+          v-for="workout in savedWorkouts"
           :key="workout.id"
         >
           <v-expansion-panel-header class="pa-6">
@@ -179,37 +180,36 @@
 
 <script>
 import moment from 'moment'
-import db from '../firebase/initDatabase.js'
 
 export default {
-  data: () => {
-    return {
-      workouts: []
-    }
-  },
 
   created () {
-    const savedWorkouts = this.$store.getters.workouts
+    this.$store.dispatch('initWorkouts')
+  },
 
-    // add formatted date attribute to each workout
-    savedWorkouts.forEach(workout => {
-      workout.workoutDate = moment(workout.timestamp).format('hh:mm | ddd DD MMMM YYYY')
-    })
-    // sort the workouts in descending order by time (latest on top)
-    this.workouts = savedWorkouts.sort((a, b) => b.timestamp - a.timestamp)
+  computed: {
+    savedWorkouts () {
+      let workouts = this.$store.getters.workouts
+
+      // add formatted date attribute to each workout
+      workouts.forEach(workout => {
+        workout.workoutDate = moment(workout.timestamp).format('hh:mm | ddd DD MMMM YYYY')
+      })
+
+      // sort the workouts in descending order by time (latest on top)
+      workouts = workouts.sort((a, b) => b.timestamp - a.timestamp)
+
+      return workouts
+    }
   },
 
   methods: {
     removeWorkout (id) {
-      db.collection('workouts').doc(id).delete()
+      this.$store.dispatch('deleteWorkout', id)
         .then(() => {
-          this.$store.dispatch('initWorkouts')
-          this.workouts = this.workouts.filter(workout => {
+          this.savedWorkouts = this.savedWorkouts.filter(workout => {
             return workout.id !== id
           })
-        })
-        .catch(error => {
-          alert(error)
         })
     }
   }

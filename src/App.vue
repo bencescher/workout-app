@@ -13,10 +13,6 @@ export default {
 
   components: {
     'app-menu': Menu
-  },
-
-  created () {
-    this.$store.dispatch('initWorkouts')
   }
 }
 </script>

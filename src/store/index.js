@@ -55,6 +55,18 @@ export default new Vuex.Store({
       }
     },
 
+    'DELETE_WORKOUT' (state, workoutId) {
+      db.collection('workouts').doc(workoutId).delete()
+        .then(() => {
+          state.workouts = state.workouts.filter(workout => {
+            return workout.id !== workoutId
+          })
+        })
+        .catch(error => {
+          alert(error)
+        })
+    },
+
     'SET_WORKOUT' (state) {
       state.workouts = []
       const user = firebase.auth().currentUser.email
@@ -104,6 +116,10 @@ export default new Vuex.Store({
   actions: {
     createWorkout: ({ commit }, workout) => {
       commit('CREATE_WORKOUT', workout)
+    },
+
+    deleteWorkout: ({ commit }, workoutId) => {
+      commit('DELETE_WORKOUT', workoutId)
     },
 
     initWorkouts: ({ commit }) => {
