@@ -13,7 +13,7 @@
       class="mx-auto mt-12 px-8 py-4"
     >
       <h1 class="text-center display-1 mt-4">Add a new workout</h1>
-      <form>
+      <form @submit.prevent="submit()">
         <div class="text-center">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
@@ -133,7 +133,7 @@
             class="mr-4 my-4"
             text
             color="primary"
-            @click="submit"
+            type="submit"
           >Save</v-btn>
           <v-btn
             class="my-4"
@@ -313,9 +313,7 @@ export default {
       }
 
       this.$store.dispatch('createWorkout', newWorkout)
-        .then(() => {
-          this.$store.dispatch('initWorkouts')
-        })
+
       // show temporary success message after saving the new workout
       this.showSuccess = true
       this.clear()

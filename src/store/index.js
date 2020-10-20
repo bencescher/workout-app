@@ -10,52 +10,11 @@ export default new Vuex.Store({
     workouts: []
   },
   mutations: {
-    'CREATE_WORKOUT' (state, workout) {
-      const weightRepetitions = []
-      const user = firebase.auth().currentUser.email
-
-      workout.user = user
-
-      switch (workout.workouttype) {
-        case 'cardio':
-          db.collection('workouts').add({
-            workouttype: workout.workouttype,
-            exercise: workout.exercise,
-            timestamp: workout.timestamp,
-            duration: workout.duration,
-            distance: workout.distance,
-            user: user
-          })
-          break
-        case 'own-weight':
-          db.collection('workouts').add({
-            workouttype: workout.workouttype,
-            exercise: workout.exercise,
-            timestamp: workout.timestamp,
-            repetitions: workout.repetitions,
-            user: user
-          })
-          break
-        case 'weight':
-          workout.repetitions.forEach(repetitionPair => {
-            repetitionPair.forEach(repetitionPaitItem => {
-              weightRepetitions.push(repetitionPaitItem)
-            })
-          })
-          db.collection('workouts').add({
-            workouttype: workout.workouttype,
-            exercise: workout.exercise,
-            timestamp: workout.timestamp,
-            repetitions: weightRepetitions,
-            user: user
-          })
-          break
-        default:
-          break
-      }
+    createWorkout (state, newWorkout) {
+      db.collection('workouts').add(newWorkout)
     },
 
-    'DELETE_WORKOUT' (state, workoutId) {
+    deleteWorkout (state, workoutId) {
       db.collection('workouts').doc(workoutId).delete()
         .then(() => {
           state.workouts = state.workouts.filter(workout => {
@@ -67,9 +26,50 @@ export default new Vuex.Store({
         })
     },
 
-    'SET_WORKOUT' (state) {
-      state.workouts = []
+    setWorkouts (state, workoutList) {
+      state.workouts = workoutList
+    }
+  },
+  actions: {
+    createWorkout: ({ commit }, workout) => {
+      const weightRepetitions = []
       const user = firebase.auth().currentUser.email
+      const newWorkout = {
+        workouttype: workout.workouttype,
+        exercise: workout.exercise,
+        timestamp: workout.timestamp,
+        user: user
+      }
+
+      switch (workout.workouttype) {
+        case 'cardio':
+          newWorkout.duration = workout.duration
+          newWorkout.distance = workout.distance
+          break
+        case 'own-weight':
+          newWorkout.repetitions = workout.repetitions
+          break
+        case 'weight':
+          workout.repetitions.forEach(repetitionPair => {
+            repetitionPair.forEach(repetitionPaitItem => {
+              weightRepetitions.push(repetitionPaitItem)
+            })
+          })
+          newWorkout.repetitions = weightRepetitions
+          break
+        default:
+          break
+      }
+      commit('createWorkout', newWorkout)
+    },
+
+    deleteWorkout: ({ commit }, workoutId) => {
+      commit('deleteWorkout', workoutId)
+    },
+
+    initWorkouts: ({ commit }) => {
+      const user = firebase.auth().currentUser.email
+      const workoutList = []
 
       db.collection('workouts').get()
         .then(storedWorkouts => {
@@ -107,23 +107,11 @@ export default new Vuex.Store({
                 default:
                   break
               }
-              state.workouts.push(currentWorkout)
+              workoutList.push(currentWorkout)
             }
           })
+          commit('setWorkouts', workoutList)
         })
-    }
-  },
-  actions: {
-    createWorkout: ({ commit }, workout) => {
-      commit('CREATE_WORKOUT', workout)
-    },
-
-    deleteWorkout: ({ commit }, workoutId) => {
-      commit('DELETE_WORKOUT', workoutId)
-    },
-
-    initWorkouts: ({ commit }) => {
-      commit('SET_WORKOUT')
     }
   },
   getters: {
